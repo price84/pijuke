@@ -1,0 +1,149 @@
+<html>
+<head>
+	<title>Ed Jukebox</title>
+	
+	<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+	<div id="header">
+		<img src="/images/ed-jukebox-logo.png" alt="Ed Jukebox"/>
+		<hr />
+	</div>
+	
+	<div id="nowplaying">
+		<p id="npArtist">Loading...</p>
+		<p id="npTrack"></p>
+		
+		<p id="npTimeDisplay"><span id="npCurTime">-</span> / <span id="npTime">-</span></p>
+
+		<p id="usersConnected"></p>
+	</div>
+	
+	<div id="voteDisplay"></div>
+
+	<div id="voteButton">
+		<a href="javascript:;" onclick="voteNext();" id="voteNext">Next &raquo;</a>
+	</div>
+	
+	<div id="emergencyJarOfHearts">
+		<a href="javascript:;" onclick="emergencyJarOfHearts();" id="emergencyJarOfHeartsLink">Emergency <em>"Jar of Hearts"</em> &raquo;</a>
+		<span id="emergencyJarOfHeartsPlaying" class="hidden"></span>
+	</div>
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+	var currentVotesRequired = 0;
+	
+	function isInt(n) {
+		return typeof n === 'number' && n % 1 == 0;
+	}
+	
+	if (window.location.search.substring(0,6) != '?user=')
+	{
+		alert('Please provide a user parameter (e.g. jr/steve/jon/james)');
+	}
+	else
+	{
+		var socket = io.connect(window.location.href);
+
+		socket.on('dupe', function (data) {
+			alert('You were caught cheating.');
+			socket.disconnect();
+		});
+
+		socket.on('banned', function (data) {
+			alert('You have been banned.');
+			socket.disconnect();
+		});
+
+		socket.on('nowplaying', function (data) {
+			johPlayer = data.jarOfHeartsPlayer.charAt(0).toUpperCase() + data.jarOfHeartsPlayer.slice(1);
+
+			//console.log(data);
+			document.getElementById('npArtist').innerHTML = data.artist;
+			document.getElementById('npTrack').innerHTML = data.track;
+			document.getElementById('npCurTime').innerHTML = data.curtime;
+			document.getElementById('npTime').innerHTML = data.tracktime;
+			document.getElementById('emergencyJarOfHeartsPlaying').innerHTML = 'Jar of Hearts played by ' + johPlayer;
+
+			var votesRequired = Math.ceil(data.users / 2);
+
+			var connected = '';
+			if (data.users == 0) {
+				connected = 'There is no-one connected... wtf?';
+			} else if (data.users == 1) {
+				connected = 'You are the only one connected.';
+			} else {
+				connected = 'There are ' + data.users + ' people connected. ';
+				if (votesRequired == 1) {
+					connected += 'One vote needed to skip tracks.';
+				} else {
+					connected += votesRequired + ' votes needed to skip tracks.';
+				}
+			}
+			document.getElementById('usersConnected').innerHTML = connected;
+			
+			var voteDisplay = document.getElementById('voteDisplay');
+			
+			if (currentVotesRequired > votesRequired)
+			{
+				while(currentVotesRequired > votesRequired)
+				{
+					voteDisplay.removeChild(voteDisplay.lastChild);
+					
+					currentVotesRequired--;
+				}
+			}
+			
+			if (currentVotesRequired < votesRequired)
+			{
+				while(currentVotesRequired < votesRequired)
+				{
+					var img = document.createElement('IMG');
+					img.src = '/images/no-vote.png';
+					voteDisplay.appendChild(img);
+					
+					currentVotesRequired++;
+				}
+			}
+			
+			for (var i = 0; i < currentVotesRequired; i++)
+			{
+				if (data.voteusers[i])
+				{
+					voteDisplay.childNodes[i].src = '/images/user-' + data.voteusers[i] + '.png'; 
+				}
+				else
+				{
+					voteDisplay.childNodes[i].src = '/images/no-vote.png'; 
+				}
+			}
+			
+			if (data.track == 'Jar of Hearts')
+			{
+				document.getElementById('emergencyJarOfHeartsLink').className = 'hidden';
+				document.getElementById('emergencyJarOfHeartsPlaying').className = '';
+			}
+			else
+			{
+				document.getElementById('emergencyJarOfHeartsLink').className = '';
+				document.getElementById('emergencyJarOfHeartsPlaying').className = 'hidden';
+			}
+
+			//document.getElementById('connectedUsers').innerHTML = data.users;
+		});
+	
+		function voteNext()
+		{
+			socket.emit('votenext');
+		}
+		
+		function emergencyJarOfHearts()
+		{
+			socket.emit('emergencyJarOfHearts');
+		}
+	}
+</script>
+</body>
+</html>

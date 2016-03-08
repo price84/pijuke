@@ -1,0 +1,93 @@
+body {
+	font-family:
+	Verdana, sans-serif;
+	background-color: rgb(237, 237, 237);
+	}
+
+hr {
+	border: 0px currentColor;
+	height: 2px;
+	color: rgb(38, 172, 226);
+	background-color: rgb(38, 172, 226);
+	}
+
+#header img {
+	margin: 0px auto;
+	max-width: 90%;
+	padding-top: 10px;
+	display: block;
+	}
+
+#npArtist {
+	text-align: center;
+	color: rgb(96, 96, 96);
+	font-size: 18px;
+	font-weight: bold;
+	}
+
+#npTrack {
+	text-align: center;
+	color: rgb(96, 96, 96);
+	font-size: 18px;
+	font-weight: normal;
+	}
+
+#npTimeDisplay {
+	text-align: center;
+	color: rgb(96, 96, 96);
+	font-size: 14px;
+	font-weight: bold;
+	}
+
+#usersConnected {
+	text-align: center;
+	color: rgb(96, 96, 96);
+	font-size: 8px;
+	font-weight: bold;
+	}
+
+#voteNext {
+	margin: 0px auto;
+	border-radius: 5px;
+	width: 70%;
+	height: 60px;
+	text-align: center;
+	color: rgb(255, 255, 255);
+	line-height: 60px;
+	font-size: 30px;
+	text-decoration: none;
+	display: block;
+	background-color: rgb(111, 190, 68);
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	}
+
+#voteNext:hover {
+	color: rgb(245, 245, 245);
+	background-color: rgb(122, 199, 80);
+	}
+
+#voteDisplay {
+	margin: 20px 0px;
+	text-align: center;
+	}
+
+#voteDisplay img {
+	width: 52px;
+	height: 52px;
+	padding-left: 10px;
+	}
+
+#voteDisplay img:first-child {
+	padding-left: 0px;
+	}
+
+#emergencyJarOfHearts {
+	margin-top: 10px;
+	text-align: center;
+	font-size: 10px;
+}
+
+.hidden {
+	display: none;
+}
